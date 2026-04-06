@@ -9,10 +9,18 @@ public:
     : """
     str_list = str.split(", ")
     f= []
+    
     for ele in str_list:
         name = ele.split(" ")[-1]
         f.append(f"{name}(std::move({name}))")
+        
     code+=", ".join(f) + "{}\n\n"
+    
+    code += f"    std::any accept(Visitor &visitor) override {{\n"
+    code += f"        return visitor.visit{class_name}Expr(*this);\n"
+    code += f"    }}\n\n"
+    
+    
     for ele in str_list:
         code+= f"    const " + ele + ";\n"
     code+="};\n"
@@ -28,13 +36,33 @@ def define_ast(output_dir, types):
 #include <memory>
 #include <any>
 #include \"Token.h\"
-
-class Expr {
-public:
-    virtual ~Expr() = default;
-};
     """
     file.write(to_write)
+    for t in types:
+        parts = t.split(": ")
+        name = parts[0].strip()
+        fields = parts[1].strip()
+        
+        file.write("\nclass " + name + ";")
+    file.write("\nclass Visitor {\npublic:\n")
+    for t in types:
+        parts = t.split(": ")
+        name = parts[0].strip()
+        fields = parts[1].strip()
+        
+        file.write(f"    virtual std::any visit{name}Expr({name}& expr) = 0;\n")
+    file.write("    virtual ~Visitor() = default;\n};")
+    sk = """
+    
+class Expr{
+public:
+    virtual ~Expr() = default;
+    virtual std::any accept(Visitor &visitor) = 0;
+};
+"""
+    
+    file.write(sk)
+    
     for t in types:
         parts = t.split(": ")
         name = parts[0].strip()
