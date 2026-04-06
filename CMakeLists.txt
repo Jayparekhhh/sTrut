@@ -11,4 +11,5 @@ add_executable(
         interpreter/Token.h
         interpreter/Scanner.h
         interpreter/ast.cpp
-        interpreter/ast.h)
+        interpreter/ast.h
+        interpreter/Expr.h)
