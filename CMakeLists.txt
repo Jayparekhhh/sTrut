@@ -12,4 +12,5 @@ add_executable(
         interpreter/Scanner.h
         interpreter/ast.cpp
         interpreter/ast.h
-        interpreter/Expr.h)
+        interpreter/Expr.h
+        interpreter/printAst.cpp)
